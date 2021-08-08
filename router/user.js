@@ -49,8 +49,13 @@ router.post('/auth', async(req, res)=>{
 
 // middleware는 다음처럼 중앙에 배치 
 router.get('/users/me',authMiddleware, async(req, res)=>{
-    console.log(res.locals.user);
-    res.send({});
+    const {user} = res.locals;
+    res.send({
+        user:{
+            email: user.email,
+            nickname: user.nickname
+        }
+    });
 })
 
 module.exports = router;
