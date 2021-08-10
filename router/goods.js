@@ -49,7 +49,7 @@ const router = express.Router();
  * /api/goods?category=drink
  * /api/goods?category=drink2
  */
- router.get("/goods", authMiddleware, async (req, res) => {
+ router.get("/goods", async (req, res) => {
     const { category } = req.query;
     const goods = await Goods.find(category ? { category } : undefined)
       .sort("-date")
@@ -72,4 +72,27 @@ const router = express.Router();
       res.send({ goods });
     }
   });
+
+router.post('/goods', async(req, res) => {
+  const {name, thumbnailUrl, category, price} = req.body;
+  const goods = await Goods.findOne({name}).exec();
+  if(goods){
+    res.status(400).send({errorMessage: '이미 있는 상품'})
+    return;
+  }
+  const newGoods = new Goods({
+    name: name, 
+    thumbnailUrl, 
+    category, 
+    price
+  });
+
+  await newGoods.save();
+  res.send({message: 'goods 생성'});
+  
+})
+
+
+
+
 module.exports  = router;

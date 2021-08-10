@@ -2,21 +2,23 @@ const express = require("express");
 const app = express();
 const userRouter = require('./router/user');
 const goodsRouter = require('./router/goods');
-// const cartRouter = require('./router/cart');
+const cartRouter = require('./router/cart');
 const port = 8080;
 //mongo
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://172.17.0.2/shopping-demo", {
+const dbpath = "mongodb://172.17.0.3/shopping-demo"
+mongoose.connect(dbpath, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 
-// user 
-app.use("/api", express.urlencoded({ extended: false }), userRouter);
-app.use("/api", express.urlencoded({ extended: false }), goodsRouter);
-// app.use("/api", express.urlencoded({ extended: false }), cartRouter);
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
+app.use("/api", userRouter);
+app.use("/api", goodsRouter);
+app.use("/api", cartRouter);
 
 
 app.use(express.static("assets"));
