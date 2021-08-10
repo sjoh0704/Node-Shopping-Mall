@@ -1,4 +1,5 @@
 const express = require('express');
+const Cart = require("../models/cart");
 const Goods = require("../models/goods");
 const authMiddleware = require("../middlewares/auth-middleware");
 const router = express.Router();
@@ -8,37 +9,36 @@ const router = express.Router();
  * 내가 가진 장바구니 목록을 전부 불러온다.
  */
  router.get("/goods/cart", authMiddleware, async (req, res) => {
-    const { userId } = res.locals.user;
-  
-    const cart = await Cart.find({
-      userId,
-    }).exec();
-  
-    const goodsIds = cart.map((c) => c.goodsId);
-  
-    // 루프 줄이기 위해 Mapping 가능한 객체로 만든것
-    const goodsKeyById = await Goods.find({
-      _id: { $in: goodsIds },
-    })
-      .exec()
-      .then((goods) =>
-        goods.reduce(
-          (prev, g) => ({
-            ...prev,
-            [g.goodsId]: g,
-          }),
-          {}
-        )
-      );
-  
-    res.send({
-      cart: cart.map((c) => ({
-        quantity: c.quantity,
-        goods: goodsKeyById[c.goodsId],
-      })),
-    });
+  const { userId } = res.locals.user;
+  const cart = await Cart.find({
+    userId,
+  }).exec();
+  const goodsIds = cart.map((c) => c.goodsId);
+  // 루프 줄이기 위해 Mapping 가능한 객체로 만든것
+  const goodsKeyById = await Goods.find({
+    _id: { $in: goodsIds },
+  })
+    .exec()
+    .then((goods) =>
+      goods.reduce(
+        (prev, g) => ({
+          ...prev,
+          [g.goodsId]: g,
+        }),
+        {}
+      )
+    );
+
+  res.send({
+    cart: cart.map((c) => ({
+      quantity: c.quantity,
+      goods: goodsKeyById[c.goodsId],
+    })),
   });
+
+
   
+});
 
 
 /**
@@ -49,7 +49,7 @@ const router = express.Router();
  * /api/goods?category=drink
  * /api/goods?category=drink2
  */
- router.get("/goods", async (req, res) => {
+ router.get("/goods", authMiddleware, async (req, res) => {
     const { category } = req.query;
     const goods = await Goods.find(category ? { category } : undefined)
       .sort("-date")
@@ -73,7 +73,7 @@ const router = express.Router();
     }
   });
 
-router.post('/goods', async(req, res) => {
+router.post('/goods', authMiddleware,async(req, res) => {
   const {name, thumbnailUrl, category, price} = req.body;
   const goods = await Goods.findOne({name}).exec();
   if(goods){

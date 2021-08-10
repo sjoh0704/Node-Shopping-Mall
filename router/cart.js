@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Cart = require("../models/cart");
+const Goods = require("../models/goods");
 const authMiddleware = require("../middlewares/auth-middleware");
 
 
@@ -56,5 +57,10 @@ router.delete("/goods/:goodsId/cart", authMiddleware, async (req, res) => {
     // NOTE: 성공했을때 딱히 정해진 응답 값이 없다.
     res.send({});
   });
+
+
+
+
+
 
   module.exports = router;
