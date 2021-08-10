@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user')
+const User = require('../models/user_mongo')
 module.exports = (req, res, next) => {
 
     // 여기서 토큰을 검사한다. 
