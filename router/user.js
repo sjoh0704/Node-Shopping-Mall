@@ -1,8 +1,10 @@
 const express =require('express');
 const router = express.Router();
-const User = require("../models/user_mongo")
+const {User} = require('../models/index');
+const {Op} = require('sequelize');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../middlewares/auth-middleware')
+
 
 router.post('/users', async(req, res)=>{
     const {nickname, email, password, confirmPassword} = req.body;
@@ -12,8 +14,10 @@ router.post('/users', async(req, res)=>{
         });
         return;
     }
-    const existUser = await User.find({
-        $or:[{email}, {nickname}]
+    const existUser = await User.findAll({
+        where:{
+            [Op.or]:[{email}, {nickname}]
+        }
     });
     if(existUser.length){
         res.status(400).send({
@@ -21,16 +25,18 @@ router.post('/users', async(req, res)=>{
         });
         return;
     }
-    
-    const user = new User({email, nickname, password});
-    await user.save();
+    await User.create({email, nickname, password});
     res.send({message: "success"});
 });
 
 
 router.post('/auth', async(req, res)=>{
     const {email,password} = req.body;
-    const user = await User.findOne({email, password}).exec();
+    const user = await User.findOne({
+        where:{
+            email, password
+        }
+    });
     if(!user){
         res.status(400).send({
             errorMessage: '이메일이나 패스워드가 잘못되었습니다.'
