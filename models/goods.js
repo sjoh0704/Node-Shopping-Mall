@@ -14,10 +14,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Goods.init({
+    goodsId: {
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
     name: DataTypes.STRING,
     thumnailUrl: DataTypes.STRING,
     category: DataTypes.STRING,
-    price: DataTypes.NUMBER
+    price: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Goods',
