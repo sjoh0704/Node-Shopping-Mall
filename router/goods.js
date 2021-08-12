@@ -15,10 +15,6 @@ const {Op} = require('sequelize');
     }
   });
   const goodsIds = cart.map((c) => c.goodsId);
-  // 루프 줄이기 위해 Mapping 가능한 객체로 만든것
-  // const goodsKeyById = await Goods.find({
-  //   _id: { $in: goodsIds },
-  // })
   const goodsKeyById = await Goods.findAll({
     where:{
       goodsId:{

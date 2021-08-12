@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {Cart, Goods} = require("../models");
-const authMiddleware = require("../middlewares/auth-middleware");
+
 
 
 /**
@@ -14,20 +14,21 @@ const authMiddleware = require("../middlewares/auth-middleware");
     const { quantity } = req.body;
   
     const existsCart = await Cart.findOne({
-      userId,
-      goodsId,
-    }).exec();
+      where:{
+        userId,
+        goodsId,
+      }
+    });
   
     if (existsCart) {
       existsCart.quantity = quantity;
       await existsCart.save();
     } else {
-      const cart = new Cart({
+      await Cart.create({
         userId,
         goodsId,
         quantity,
       });
-      await cart.save();
     }
   
     // NOTE: 성공했을때 응답 값을 클라이언트가 사용하지 않는다.
@@ -44,13 +45,16 @@ router.delete("/goods/:goodsId/cart", async (req, res) => {
     const { goodsId } = req.params;
   
     const existsCart = await Cart.findOne({
-      userId,
-      goodsId,
-    }).exec();
+      where:{
+        userId,
+        goodsId,
+      }
+
+    })
   
     // 있든 말든 신경 안쓴다. 그냥 있으면 지운다.
     if (existsCart) {
-      existsCart.delete();
+      await existsCart.destroy();
     }
   
     // NOTE: 성공했을때 딱히 정해진 응답 값이 없다.
