@@ -1,25 +1,31 @@
 const express = require('express');
-const Cart = require("../models/cart_tmp");
-const Goods = require("../models/goods_tmp");
+const {Goods, Cart} = require("../models");
 const authMiddleware = require("../middlewares/auth-middleware");
 const router = express.Router();
-
+const {Op} = require('sequelize');
 
 /**
  * 내가 가진 장바구니 목록을 전부 불러온다.
  */
- router.get("/goods/cart", authMiddleware, async (req, res) => {
+ router.get("/goods/cart", async (req, res) => {
   const { userId } = res.locals.user;
-  const cart = await Cart.find({
-    userId,
-  }).exec();
+  const cart = await Cart.findAll({
+    where:{
+      userId
+    }
+  });
   const goodsIds = cart.map((c) => c.goodsId);
   // 루프 줄이기 위해 Mapping 가능한 객체로 만든것
-  const goodsKeyById = await Goods.find({
-    _id: { $in: goodsIds },
-  })
-    .exec()
-    .then((goods) =>
+  // const goodsKeyById = await Goods.find({
+  //   _id: { $in: goodsIds },
+  // })
+  const goodsKeyById = await Goods.findAll({
+    where:{
+      goodsId:{
+        [Op.in]:[goodsIds]
+      }
+    }
+  }).then((goods) =>
       goods.reduce(
         (prev, g) => ({
           ...prev,
@@ -49,11 +55,9 @@ const router = express.Router();
  * /api/goods?category=drink
  * /api/goods?category=drink2
  */
- router.get("/goods", authMiddleware, async (req, res) => {
+ router.get("/goods", async (req, res) => {
     const { category } = req.query;
-    const goods = await Goods.find(category ? { category } : undefined)
-      .sort("-date")
-      .exec();
+    const goods = await Goods.findAll(category ? { where:{category} } : {});
   
     res.send({ goods });
   });
@@ -62,9 +66,9 @@ const router = express.Router();
 /**
  * 상품 하나만 가져오기
  */
- router.get("/goods/:goodsId", authMiddleware, async (req, res) => {
+ router.get("/goods/:goodsId", async (req, res) => {
     const { goodsId } = req.params;
-    const goods = await Goods.findById(goodsId).exec();
+    const goods = await Goods.findByPk(goodsId);
   
     if (!goods) {
       res.status(404).send({});
@@ -73,21 +77,24 @@ const router = express.Router();
     }
   });
 
-router.post('/goods', authMiddleware,async(req, res) => {
+router.post('/goods', async(req, res) => {
   const {name, thumbnailUrl, category, price} = req.body;
-  const goods = await Goods.findOne({name}).exec();
+  const goods = await Goods.findOne({
+    where:{
+      name
+    }
+  });
   if(goods){
     res.status(400).send({errorMessage: '이미 있는 상품'})
     return;
   }
-  const newGoods = new Goods({
-    name: name, 
+  await Goods.create({
+    name, 
     thumbnailUrl, 
     category, 
     price
   });
 
-  await newGoods.save();
   res.send({message: 'goods 생성'});
   
 })

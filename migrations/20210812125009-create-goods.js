@@ -11,7 +11,7 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      thumnailUrl: {
+      thumbnailUrl: {
         type: Sequelize.STRING
       },
       category: {

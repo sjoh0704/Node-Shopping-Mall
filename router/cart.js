@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Cart = require("../models/cart_tmp");
-const Goods = require("../models/goods_tmp");
+const {Cart, Goods} = require("../models");
 const authMiddleware = require("../middlewares/auth-middleware");
 
 
@@ -9,7 +8,7 @@ const authMiddleware = require("../middlewares/auth-middleware");
  * 장바구니에 상품 담기.
  * 장바구니에 상품이 이미 담겨있으면 갯수만 수정한다.
  */
- router.put("/goods/:goodsId/cart", authMiddleware, async (req, res) => {
+ router.put("/goods/:goodsId/cart", async (req, res) => {
     const { userId } = res.locals.user;
     const { goodsId } = req.params;
     const { quantity } = req.body;
@@ -40,7 +39,7 @@ const authMiddleware = require("../middlewares/auth-middleware");
 /**
  * 장바구니 항목 삭제
  */
-router.delete("/goods/:goodsId/cart", authMiddleware, async (req, res) => {
+router.delete("/goods/:goodsId/cart", async (req, res) => {
     const { userId } = res.locals.user;
     const { goodsId } = req.params;
   
