@@ -3,7 +3,6 @@ const socket = io.connect("/");
 socket.on("BUY_GOODS", function (data) {
   const { nickname, goodsId, goodsName, date } = data;
   makeBuyNotification(nickname, goodsName, goodsId, date);
-  console.log('buy_goods!!');
 });
 
 function initAuthenticatePage() {
@@ -15,7 +14,6 @@ function bindSamePageViewerCountEvent(callback) {
 }
 
 function postOrder(user, order) {
-  console.log('구매했어요!');
   if (!order.length) {
     return;
   }
