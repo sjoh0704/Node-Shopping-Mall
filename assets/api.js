@@ -1,31 +1,33 @@
-// const socket = io.connect("/");
+const socket = io.connect("/");
 
-// socket.on("BUY_GOODS", function (data) {
-//   const { nickname, goodsId, goodsName, date } = data;
-//   makeBuyNotification(nickname, goodsName, goodsId, date);
-// });
+socket.on("BUY_GOODS", function (data) {
+  const { nickname, goodsId, goodsName, date } = data;
+  makeBuyNotification(nickname, goodsName, goodsId, date);
+  console.log('buy_goods!!');
+});
 
 function initAuthenticatePage() {
-  // socket.emit("CHANGED_PAGE", `${location.pathname}${location.search}`);
+  socket.emit("CHANGED_PAGE", `${location.pathname}${location.search}`);
 }
 
 function bindSamePageViewerCountEvent(callback) {
-  // socket.on("SAME_PAGE_VIEWER_COUNT", callback);
+  socket.on("SAME_PAGE_VIEWER_COUNT", callback);
 }
 
 function postOrder(user, order) {
+  console.log('구매했어요!');
   if (!order.length) {
     return;
   }
 
-  // socket.emit("BUY", {
-  //   nickname: user.nickname,
-  //   goodsId: order[0].goods.goodsId,
-  //   goodsName:
-  //     order.length > 1
-  //       ? `${order[0].goods.name} 외 ${order.length - 1}개의 상품`
-  //       : order[0].goods.name,
-  // });
+  socket.emit("BUY", {
+    nickname: user.nickname,
+    goodsId: order[0].goods.goodsId,
+    goodsName:
+      order.length > 1
+        ? `${order[0].goods.name} 외 ${order.length - 1}개의 상품`
+        : order[0].goods.name,
+  });
 }
 
 function getSelf(callback) {
