@@ -22,16 +22,18 @@ app.use(express.static("assets"));
 io.on('connection', (socket) => {
   console.log("소켓 연결 성공");
   
-  // 연결되었을때만 뜨게된다. 
-  socket.emit("BUY_GOODS", {
-    nickname: '서버가 보내준 구매자 닉네임',
-    goodsId: 10, // 서버가 보내준 상품 데이터 고유 ID
-    goodsName: '서버가 보내준 구매자가 구매한 상품 이름',
-    date: '서버가 보내준 구매 일시'
-  });
 
   socket.on('BUY', (data)=> {
-    console.log("클라이언트가 구매한 데이터",data);
+    const payload = {
+      nickname: data.nickname,
+      goodsId: data.goodsId,
+      goodsName: data.goodsName,
+      date: new Date().toISOString(), // 보기 쉬운 문자열로 바꾸기 
+    };
+    
+    // io.emit('BUY_GOODS', payload); // io는 모든 소켓 관리자라고 하자 
+    // socket.emit('BUY_GOODS', payload); 나에게만 보내기 
+    socket.broadcast.emit('BUY_GOODS', payload); // 나를 제외한 모두에게 
   })
 
 
