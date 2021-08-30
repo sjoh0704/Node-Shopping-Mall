@@ -19,10 +19,11 @@ app.use("/api", authMiddleware, cartRouter);
 
 app.use(express.static("assets"));
 
+
+let cntByGoods = {}
+
 io.on('connection', (socket) => {
   console.log("소켓 연결 성공");
-  
-
   socket.on('BUY', (data)=> {
     const payload = {
       nickname: data.nickname,
@@ -34,10 +35,31 @@ io.on('connection', (socket) => {
     // io.emit('BUY_GOODS', payload); // io는 모든 소켓 관리자라고 하자 
     // socket.emit('BUY_GOODS', payload); 나에게만 보내기 
     socket.broadcast.emit('BUY_GOODS', payload); // 나를 제외한 모두에게 
+  });
+
+  socket.on('CHANGED_PAGE',data=>{
+    
+    const goodsId = data.split("?goodsId=")[1];
+    cntByGoods[socket.id] = goodsId
+    let cnt = 0; 
+    for(var key in cntByGoods){
+      if(cntByGoods[key] == goodsId)
+        cnt ++; 
+    }
+    
+    io.emit('SAME_PAGE_VIEWER_COUNT', cnt);
   })
 
 
+  
+    
+
+
+
   socket.on('disconnect', () => {
+    if(socket.id in cntByGoods){
+      delete cntByGoods[socket.id];
+    }
     console.log('소켓 연결이 해제되었습니다.');
   })
 })
@@ -47,5 +69,8 @@ io.on('connection', (socket) => {
 http.listen(port, () => {
   console.log("listening: " + port);
 });
+
+
+
 
 
