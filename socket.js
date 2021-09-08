@@ -44,8 +44,10 @@ const initSocket = (socket, cntByGoods) => {
 };
 let cntByGoods = {};
 io.on('connection', (socket) => {
-    const { watchBuying, watchDisconnecting, watchChangePage } =
-        initSocket(socket, cntByGoods);
+    const { watchBuying, watchDisconnecting, watchChangePage } = initSocket(
+        socket,
+        cntByGoods
+    );
     console.log('소켓 연결 성공');
     watchBuying();
     watchChangePage();

@@ -1,11 +1,10 @@
 {
-
   "name": "PlusMyShop",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prettify": "prettier --write *.js **/*.js"
   },
   "keywords": [],
@@ -22,7 +21,9 @@
     "socketio": "^1.0.0"
   },
   "devDependencies": {
+    "jest": "^27.1.0",
     "prettier": "^2.3.2",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "supertest": "^6.1.6"
   }
 }
