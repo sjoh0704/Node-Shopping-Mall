@@ -1,2 +1,3 @@
 # Node-Shopping-Mall
-Node Mini shop
+Nodejs
+mongodb
